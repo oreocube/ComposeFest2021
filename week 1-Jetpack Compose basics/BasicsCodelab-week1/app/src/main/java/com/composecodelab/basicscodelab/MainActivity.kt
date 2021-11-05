@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -40,68 +41,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    // remember 를 사용하면 recomposition 으로부터 보호할 수 있어 상태가 리셋되지 않는다.
-    var expanded by remember { mutableStateOf(false) }
-
-    //val extraPadding = if (expanded.value) 48.dp else 0.dp
-    val extraPadding by animateDpAsState( // 확장 애니메이션 효과주기
-        if (expanded) 48.dp else 0.dp,
-
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        )
-    )
-    Surface(
-        color = MaterialTheme.colors.primary,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-    ) {
-        Row(modifier = Modifier.padding(24.dp)) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    // 패딩이 절대 음수가 되지 않도록 한다. (그렇지 않으면 스프링 애니매이션 사용시 crash 발생)
-                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
-            ) {
-                Text(text = "Hello, ")
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.h4.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                )
-            }
-            IconButton(onClick = { expanded = !expanded }) {
-                Icon(
-                    if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) {
-                        stringResource(R.string.show_less)
-                    } else {
-                        stringResource(R.string.show_more)
-                    }
-                )
-
-            }
-        }
-    }
-}
-
-@Preview(
-    showBackground = true,
-    widthDp = 320,
-    uiMode = UI_MODE_NIGHT_YES,
-    name = "DefaultPreviewDark"
-)
-@Preview(showBackground = true, widthDp = 320)
-@Composable
-fun DefaultPreview() {
-    BasicsCodelabweek1Theme {
-        Greetings()
-    }
-}
-
-@Composable
 fun MyApp() {
     // remember는 컴포저블이 composition에 의해 유지되는 동안에만 작동
     //   var shouldShowOnboarding by remember { mutableStateOf(true) }
@@ -122,5 +61,76 @@ private fun Greetings(names: List<String> = List(1000) { "$it" }) { // 리스트
         items(items = names) { name ->
             Greeting(name = name)
         }
+    }
+}
+
+@Composable
+fun Greeting(name: String) {
+    Card(
+        backgroundColor = MaterialTheme.colors.primary,
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+    ) {
+        CardContent(name)
+    }
+}
+
+@Composable
+private fun CardContent(name:String) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .padding(12.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(12.dp)
+        ) {
+            Text(text = "Hello, ")
+            Text(
+                text = name,
+                style = MaterialTheme.typography.h4.copy(
+                    fontWeight = FontWeight.ExtraBold
+                )
+            )
+            if (expanded) {
+                Text(
+                    text = ("Composem ipsum color sit lazy, " +
+                            "padding theme elit, sed do bouncy. ").repeat(4),
+                )
+            }
+        }
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (expanded) {
+                    stringResource(R.string.show_less)
+                } else {
+                    stringResource(R.string.show_more)
+                }
+
+            )
+        }
+    }
+}
+
+@Preview(
+    showBackground = true,
+    widthDp = 320,
+    uiMode = UI_MODE_NIGHT_YES,
+    name = "DefaultPreviewDark"
+)
+@Preview(showBackground = true, widthDp = 320)
+@Composable
+fun DefaultPreview() {
+    BasicsCodelabweek1Theme {
+        Greetings()
     }
 }
