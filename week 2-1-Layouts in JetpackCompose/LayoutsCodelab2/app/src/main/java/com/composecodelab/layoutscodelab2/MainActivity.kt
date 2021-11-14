@@ -3,7 +3,6 @@ package com.composecodelab.layoutscodelab2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -51,14 +50,11 @@ fun LayoutsCodelab() {
 
 @Composable
 fun BodyContent(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(8.dp) // extra padding
-        // extra padding 을 BodyContent 의 Column 에서 지정할 수도 있고
-        // BodyContent 를 호출할 때 지정할 수도 있다. -> 일괄 적용할 때 유용
-        // 경우에 맞게 활용 가능하다.
-    ) {
-        Text(text = "Hi there!")
-        Text(text = "Thanks for going through the Layouts codelab")
+    MyOwnColumn(modifier.padding(8.dp)) {
+        Text("MyOwnColumn")
+        Text("places items")
+        Text("vertically.")
+        Text("We've done it by hand!")
     }
 }
 
