@@ -69,4 +69,27 @@ class TopAppBarTest {
             .assertExists()
     }
 
+    // 액션을 사용하여 RallyTopAppBar의 다른 탭을 클릭하면 선택 항목이 변경되는지 확인해보기
+    // 힌트
+    // 테스트 범위에는 RallyApp이 소유한 상태가 포함되어야 한다.
+    // 행동이 아니라 상태를 확인하자. 호출된 객체와 방법에 의존하는 대신
+    // UI 상태에 대한 assertion을 사용한다.
+
+    @Test
+    fun rallyTopAppBarTest_clickOtherTabs() {
+        var currentScreen: RallyScreen = RallyScreen.Overview
+
+        composeTestRule.setContent {
+            RallyApp(currentScreen) { screen ->
+                currentScreen = screen
+            }
+        }
+
+        RallyScreen.values().forEach { screen->
+            composeTestRule
+                .onNodeWithContentDescription(screen.name)
+                .performClick()
+            assert(currentScreen == screen)
+        }
+    }
 }
