@@ -105,6 +105,7 @@ dependencies {
     implementation "androidx.activity:activity-compose:$rootProject.activityComposeVersion"
 
     // Testing dependencies
+    androidTestImplementation "androidx.test:core-ktx:1.4.0"
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$rootProject.espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
