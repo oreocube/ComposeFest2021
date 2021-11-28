@@ -70,73 +70,83 @@ fun RallyApp() {
                 )
             }
         ) { innerPadding ->
-
-            val accountsName = Accounts.name
-            NavHost(
+            RallyNavHost(
                 navController = navController,
-                startDestination = Overview.name,
                 modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(Overview.name) {
-                    OverviewBody(
-                        onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
-                        onClickSeeAllBills = { navController.navigate(Bills.name) },
-                        onAccountClick = { name ->
-                            navigateToSingleAccount(navController, name)
-                        }
-                    )
+            )
+        }
+    }
+}
+
+@Composable
+fun RallyNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Overview.name,
+        modifier = modifier
+    ) {
+        composable(Overview.name) {
+            OverviewBody(
+                onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
+                onClickSeeAllBills = { navController.navigate(Bills.name) },
+                onAccountClick = { name ->
+                    navigateToSingleAccount(navController, name)
                 }
-                composable(Accounts.name) {
-                    AccountsBody(accounts = UserData.accounts) { name ->
-                        navigateToSingleAccount(
-                            navController = navController,
-                            accountName = name
-                        )
-                    }
-                }
-                composable(Bills.name) {
-                    BillsBody(bills = UserData.bills)
-                }
-
-                // 행을 클릭하면 개별 계좌의 세부 정보를 표시하는 Account 화면을 추가하자
-
-                // RallyActivity에서 Accounts/{name} 인자를 사용하여
-                // NavHost에 새 컴포저블을 추가
-                composable(
-                    // 새 목적지
-                    "$accountsName/{name}",
-                    // 새 목적지에 대한 navArguments 목록
-                    arguments = listOf(
-                        // String 타입의 "name"이라는 단일 인자를 정의
-                        navArgument("name") {
-                            type = NavType.StringType
-                        }
-                    ),
-                    // navDeepLink 기능을 사용하여 딥링크 목록을 추가한다.
-                    // uriPattern을 전달하고, 위의 인텐트 필터에 대해 일치하는 uri를 제공한다.
-                    // deepLinks 매개변수를 사용하여 생성된 딥 링크를 컴포저블에 전달한다.
-                    deepLinks = listOf(
-                        navDeepLink {
-                            uriPattern = "rally://$accountsName/{name}"
-                        }
-                    )
-                ) { entry ->
-                    // 컴포저블의 바디
-
-                    // 각 컴포저블의 body는 현재 목적지의 경로와 인자를 모델링하는
-                    // 현 NavBackStackEntry의 매개변수를 수신한다.
-                    // arguments를 사용하여 인자를 가져올 수 있다.
-
-                    // NavBackStackEntry의 인자들 중 "name"을 검색한다.
-                    val accountName = entry.arguments?.getString("name")
-                    // UserData에서 일치하는 첫번째 이름을 찾는다.
-                    val account = UserData.getAccount(accountName)
-                    // 계좌를 SingleAccountBody로 전달한다.
-                    SingleAccountBody(account = account)
-                } // end of composable
-
+            )
+        }
+        composable(Accounts.name) {
+            AccountsBody(accounts = UserData.accounts) { name ->
+                navigateToSingleAccount(
+                    navController = navController,
+                    accountName = name
+                )
             }
         }
+        composable(Bills.name) {
+            BillsBody(bills = UserData.bills)
+        }
+
+        // 행을 클릭하면 개별 계좌의 세부 정보를 표시하는 Account 화면을 추가하자
+
+        // RallyActivity에서 Accounts/{name} 인자를 사용하여
+        // NavHost에 새 컴포저블을 추가
+        val accountsName = Accounts.name
+        composable(
+            // 새 목적지
+            "$accountsName/{name}",
+            // 새 목적지에 대한 navArguments 목록
+            arguments = listOf(
+                // String 타입의 "name"이라는 단일 인자를 정의
+                navArgument("name") {
+                    type = NavType.StringType
+                }
+            ),
+            // navDeepLink 기능을 사용하여 딥링크 목록을 추가한다.
+            // uriPattern을 전달하고, 위의 인텐트 필터에 대해 일치하는 uri를 제공한다.
+            // deepLinks 매개변수를 사용하여 생성된 딥 링크를 컴포저블에 전달한다.
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "rally://$accountsName/{name}"
+                }
+            )
+        ) { entry ->
+            // 컴포저블의 바디
+
+            // 각 컴포저블의 body는 현재 목적지의 경로와 인자를 모델링하는
+            // 현 NavBackStackEntry의 매개변수를 수신한다.
+            // arguments를 사용하여 인자를 가져올 수 있다.
+
+            // NavBackStackEntry의 인자들 중 "name"을 검색한다.
+            val accountName = entry.arguments?.getString("name")
+            // UserData에서 일치하는 첫번째 이름을 찾는다.
+            val account = UserData.getAccount(accountName)
+            // 계좌를 SingleAccountBody로 전달한다.
+            SingleAccountBody(account = account)
+        } // end of composable
+
     }
 }
 
