@@ -1,8 +1,12 @@
 package com.example.compose.rally
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToLog
 import com.example.compose.rally.ui.components.RallyTopAppBar
+import com.example.compose.rally.ui.theme.RallyTheme
 import org.junit.Rule
 import org.junit.Test
 
@@ -39,6 +43,28 @@ class TopAppBarTest {
         composeTestRule
             .onNodeWithContentDescription(RallyScreen.Accounts.name)
             .assertIsSelected()
+    }
+
+    @Test
+    fun rallyTopAppBarTest_currentLabelExists() {
+        val allScreens = RallyScreen.values().toList()
+        composeTestRule.setContent {
+            RallyTheme {
+                RallyTopAppBar(
+                    allScreens = allScreens,
+                    onTabSelected = {},
+                    currentScreen = RallyScreen.Accounts
+                )
+            }
+        }
+
+        // logcat에서 semantics tree 보기
+        composeTestRule.onRoot().printToLog("currentLabelExists")
+
+        // 대문자로 표시되는지 확인하기
+        composeTestRule
+            .onNodeWithContentDescription(RallyScreen.Accounts.name)
+            .assertExists()
     }
 
 }
