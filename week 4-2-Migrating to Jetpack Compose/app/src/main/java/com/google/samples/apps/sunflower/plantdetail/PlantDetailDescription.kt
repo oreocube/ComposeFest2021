@@ -20,19 +20,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.samples.apps.sunflower.R
+import com.google.samples.apps.sunflower.data.Plant
+import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
 
 @Composable
-fun PlantDetailDescription() {
-    Surface {
-        Text("Hello Compose")
+fun PlantDetailDescription(plantDetailViewModel: PlantDetailViewModel) {
+    // ViewModel의 LiveData<Plant> 필드로 부터 들어오는 값을 관찰한다.
+    val plant by plantDetailViewModel.plant.observeAsState()
+
+    // plant가 null이 아니면, 내용을 표시한다.
+    plant?.let {
+        PlantDetailContent(it)
     }
 }
 
@@ -53,5 +60,19 @@ private fun PlantName(name: String) {
 private fun PlantNamePreview() {
     MaterialTheme {
         PlantName("Apple")
+    }
+}
+
+@Composable
+fun PlantDetailContent(plant: Plant) {
+    PlantName(plant.name)
+}
+
+@Preview
+@Composable
+private fun PlantDetailContentPreview() {
+    val plant = Plant("id", "Apple", "description", 3, 30, "")
+    MaterialTheme {
+        PlantDetailContent(plant)
     }
 }
