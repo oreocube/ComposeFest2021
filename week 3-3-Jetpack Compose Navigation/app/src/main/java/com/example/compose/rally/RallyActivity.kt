@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navDeepLink
 import com.example.compose.rally.RallyScreen.*
 import com.example.compose.rally.data.UserData
 import com.example.compose.rally.ui.accounts.AccountsBody
@@ -109,6 +110,14 @@ fun RallyApp() {
                         // String 타입의 "name"이라는 단일 인자를 정의
                         navArgument("name") {
                             type = NavType.StringType
+                        }
+                    ),
+                    // navDeepLink 기능을 사용하여 딥링크 목록을 추가한다.
+                    // uriPattern을 전달하고, 위의 인텐트 필터에 대해 일치하는 uri를 제공한다.
+                    // deepLinks 매개변수를 사용하여 생성된 딥 링크를 컴포저블에 전달한다.
+                    deepLinks = listOf(
+                        navDeepLink {
+                            uriPattern = "rally://$accountsName/{name}"
                         }
                     )
                 ) { entry ->
