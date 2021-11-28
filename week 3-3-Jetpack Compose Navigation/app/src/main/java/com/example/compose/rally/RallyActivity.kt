@@ -23,19 +23,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.compose.rally.ui.components.RallyTabRow
-import com.example.compose.rally.ui.theme.RallyTheme
-import com.example.compose.rally.RallyScreen.Overview
-import com.example.compose.rally.RallyScreen.Accounts
-import com.example.compose.rally.RallyScreen.Bills
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.*
+import com.example.compose.rally.RallyScreen.*
 import com.example.compose.rally.data.UserData
 import com.example.compose.rally.ui.accounts.AccountsBody
+import com.example.compose.rally.ui.accounts.SingleAccountBody
 import com.example.compose.rally.ui.bills.BillsBody
+import com.example.compose.rally.ui.components.RallyTabRow
 import com.example.compose.rally.ui.overview.OverviewBody
+import com.example.compose.rally.ui.theme.RallyTheme
 
 /**
  * This Activity recreates part of the Rally Material Study from
@@ -71,6 +69,8 @@ fun RallyApp() {
                 )
             }
         ) { innerPadding ->
+
+            val accountsName = Accounts.name
             NavHost(
                 navController = navController,
                 startDestination = Overview.name,
@@ -79,16 +79,62 @@ fun RallyApp() {
                 composable(Overview.name) {
                     OverviewBody(
                         onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
-                        onClickSeeAllBills = { navController.navigate(Bills.name) }
+                        onClickSeeAllBills = { navController.navigate(Bills.name) },
+                        onAccountClick = { name ->
+                            navigateToSingleAccount(navController, name)
+                        }
                     )
                 }
                 composable(Accounts.name) {
-                    AccountsBody(accounts = UserData.accounts)
+                    AccountsBody(accounts = UserData.accounts) { name ->
+                        navigateToSingleAccount(
+                            navController = navController,
+                            accountName = name
+                        )
+                    }
                 }
                 composable(Bills.name) {
                     BillsBody(bills = UserData.bills)
                 }
+
+                // 행을 클릭하면 개별 계좌의 세부 정보를 표시하는 Account 화면을 추가하자
+
+                // RallyActivity에서 Accounts/{name} 인자를 사용하여
+                // NavHost에 새 컴포저블을 추가
+                composable(
+                    // 새 목적지
+                    "$accountsName/{name}",
+                    // 새 목적지에 대한 navArguments 목록
+                    arguments = listOf(
+                        // String 타입의 "name"이라는 단일 인자를 정의
+                        navArgument("name") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { entry ->
+                    // 컴포저블의 바디
+
+                    // 각 컴포저블의 body는 현재 목적지의 경로와 인자를 모델링하는
+                    // 현 NavBackStackEntry의 매개변수를 수신한다.
+                    // arguments를 사용하여 인자를 가져올 수 있다.
+
+                    // NavBackStackEntry의 인자들 중 "name"을 검색한다.
+                    val accountName = entry.arguments?.getString("name")
+                    // UserData에서 일치하는 첫번째 이름을 찾는다.
+                    val account = UserData.getAccount(accountName)
+                    // 계좌를 SingleAccountBody로 전달한다.
+                    SingleAccountBody(account = account)
+                } // end of composable
+
             }
         }
     }
+}
+
+private fun navigateToSingleAccount(
+    navController: NavHostController,
+    accountName: String
+) {
+    // navController를 사용하여 컴포저블로 이동할 수 있다.
+    navController.navigate("${Accounts.name}/$accountName")
 }
